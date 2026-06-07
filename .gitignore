@@ -1,0 +1,22 @@
+# Rust build artifacts
+/target/
+
+# Environment config (contains secrets / local paths)
+.env
+
+# SQLite database
+*.db
+*.db-journal
+*.db-wal
+
+# Temp files
+/tmp/
+
+# Node modules (if any)
+node_modules/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo

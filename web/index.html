@@ -1,0 +1,712 @@
+<!DOCTYPE html>
+<html lang="en" class="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Complice</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --font: 'Inter', system-ui, sans-serif;
+  --bg: #fafafa;
+  --bg-card: rgba(255,255,255,0.6);
+  --bg-card-hover: rgba(255,255,255,0.85);
+  --bg-elevated: rgba(255,255,255,0.82);
+  --border: rgba(0,0,0,0.06);
+  --border-hover: rgba(0,0,0,0.12);
+  --text: #18181b;
+  --text-secondary: #71717a;
+  --text-muted: #a1a1aa;
+  --accent: #18181b;
+  --accent-text: #fff;
+  --shadow: 0 1px 3px rgba(0,0,0,0.04);
+  --shadow-md: 0 4px 12px rgba(0,0,0,0.06);
+  --radius: 14px;
+  --radius-sm: 10px;
+  --radius-xs: 8px;
+  --transition: 200ms ease;
+}
+
+html.dark {
+  --bg: #09090b;
+  --bg-card: rgba(24,24,27,0.6);
+  --bg-card-hover: rgba(24,24,27,0.85);
+  --bg-elevated: rgba(24,24,27,0.82);
+  --border: rgba(255,255,255,0.06);
+  --border-hover: rgba(255,255,255,0.12);
+  --text: #fafafa;
+  --text-secondary: #a1a1aa;
+  --text-muted: #52525b;
+  --accent: #fafafa;
+  --accent-text: #18181b;
+  --shadow: 0 1px 3px rgba(0,0,0,0.2);
+  --shadow-md: 0 4px 12px rgba(0,0,0,0.3);
+}
+
+body {
+  font-family: var(--font);
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  transition: background var(--transition), color var(--transition);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Header */
+.header {
+  position: sticky; top: 0; z-index: 40;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg);
+  padding: 0 1.5rem;
+  height: 3.5rem;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.header-brand { font-weight: 600; font-size: 1rem; letter-spacing: -0.01em; }
+
+/* Layout */
+.main {
+  max-width: 720px; margin: 0 auto; padding: 2rem 1.5rem 6rem;
+  min-height: calc(100vh - 3.5rem - 3rem);
+}
+.footer {
+  border-top: 1px solid var(--border);
+  height: 3rem;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.75rem; color: var(--text-muted);
+}
+
+/* Glass card */
+.glass {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  transition: background var(--transition), border var(--transition), box-shadow var(--transition);
+}
+.glass-elevated {
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-md);
+}
+
+/* Buttons */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem;
+  border: none; cursor: pointer; font-family: var(--font);
+  border-radius: var(--radius); font-size: 0.875rem; font-weight: 500;
+  transition: all var(--transition); outline: none;
+}
+.btn:active { transform: scale(0.98); }
+.btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+.btn-primary {
+  background: var(--accent); color: var(--accent-text);
+  padding: 0.75rem 1.5rem;
+}
+.btn-primary:hover:not(:disabled) { opacity: 0.9; }
+
+.btn-secondary {
+  background: var(--bg-card); border: 1px solid var(--border); color: var(--text);
+  padding: 0.6rem 1.25rem;
+}
+.btn-secondary:hover:not(:disabled) { background: var(--bg-card-hover); border-color: var(--border-hover); }
+
+.btn-icon {
+  background: var(--bg-card); border: 1px solid var(--border); color: var(--text);
+  padding: 0.55rem; border-radius: var(--radius); min-width: 2.4rem; height: 2.4rem;
+}
+.btn-icon:hover { background: var(--bg-card-hover); transform: scale(1.05); }
+
+.btn-sm { padding: 0.5rem 1rem; font-size: 0.8rem; border-radius: var(--radius-sm); }
+
+/* Inputs / Selects */
+.input, .select {
+  width: 100%;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 0.7rem 1rem;
+  font-family: var(--font); font-size: 0.875rem; color: var(--text);
+  outline: none; transition: all var(--transition);
+  appearance: none; -webkit-appearance: none;
+}
+.input:focus, .select:focus { border-color: var(--border-hover); box-shadow: var(--shadow-md); }
+.input::placeholder { color: var(--text-muted); }
+.select { cursor: pointer; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23a1a1aa' stroke-width='2'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 1rem center; padding-right: 2.5rem; }
+
+/* Tags */
+.tags { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+.tag {
+  display: inline-flex; align-items: center; gap: 0.3rem;
+  border: 1px solid var(--border); border-radius: var(--radius-xs); padding: 0.4rem 0.75rem;
+  font-size: 0.8rem; font-weight: 500; cursor: pointer;
+  transition: all var(--transition); user-select: none;
+  background: var(--bg-card); color: var(--text-secondary);
+}
+.tag:hover { border-color: var(--border-hover); }
+.tag.active { background: var(--accent); color: var(--accent-text); border-color: var(--accent); }
+
+/* Hero */
+.hero { text-align: center; margin-bottom: 2.5rem; }
+.hero h1 { font-size: 2rem; font-weight: 700; letter-spacing: -0.02em; line-height: 1.2; }
+.hero p { margin-top: 0.4rem; font-size: 0.9rem; color: var(--text-secondary); }
+
+/* Form sections */
+.form-section { margin-bottom: 1.5rem; }
+.form-label {
+  display: block; font-size: 0.72rem; font-weight: 500; color: var(--text-muted);
+  text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.5rem;
+}
+
+/* Mission cards */
+.missions-grid {
+  display: grid; gap: 0.75rem;
+  grid-template-columns: 1fr;
+}
+@media (min-width: 600px) { .missions-grid { grid-template-columns: 1fr 1fr; } }
+@media (min-width: 900px) { .missions-grid { grid-template-columns: 1fr 1fr 1fr; } }
+
+.mission-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+  transition: all var(--transition);
+  animation: fadeUp 0.4s ease both;
+}
+.mission-card:hover { background: var(--bg-card-hover); box-shadow: var(--shadow-md); }
+.mission-card.completed { opacity: 0.55; }
+.mission-card.completed:hover { opacity: 0.7; }
+
+.mission-top {
+  padding: 1.25rem 1.25rem 0;
+  cursor: pointer; border: none; background: none; width: 100%; text-align: left;
+  font-family: var(--font); color: var(--text);
+}
+.mission-title {
+  font-weight: 600; font-size: 0.95rem; display: flex; align-items: center; justify-content: space-between; gap: 0.5rem;
+}
+.mission-meta {
+  display: flex; gap: 1rem; margin-top: 0.5rem;
+  font-size: 0.75rem; color: var(--text-secondary);
+}
+.mission-meta span { display: flex; align-items: center; gap: 0.25rem; }
+
+.mission-desc {
+  padding: 0 1.25rem; max-height: 0; overflow: hidden;
+  transition: max-height 0.3s ease, padding 0.3s ease;
+  font-size: 0.85rem; color: var(--text-secondary); line-height: 1.5;
+}
+.mission-desc.open { max-height: 6rem; padding: 0.75rem 1.25rem 0; }
+
+.mission-bottom { padding: 0.75rem 1.25rem 1.25rem; }
+
+.complete-icon {
+  width: 28px; height: 28px; border-radius: 50%;
+  background: var(--bg-elevated); border: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.complete-icon svg { color: #10b981; }
+
+/* Stats bar */
+.stats-bar {
+  display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1.5rem;
+}
+.stat-badge {
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 0.5rem 0.75rem;
+  font-size: 0.8rem; font-weight: 500; display: flex; align-items: center; gap: 0.4rem;
+  animation: fadeIn 0.3s ease both;
+}
+.stat-badge .stat-icon { opacity: 0.5; display: flex; }
+.stat-badge .stat-label { color: var(--text-secondary); }
+.stat-badge .stat-value { font-weight: 600; }
+
+/* Dashboard header */
+.dashboard-header {
+  display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.5rem;
+}
+.dashboard-header h2 { font-size: 1.25rem; font-weight: 600; }
+.dashboard-actions { display: flex; gap: 0.5rem; }
+
+/* History */
+.history-toggle {
+  display: flex; align-items: center; gap: 0.4rem; font-size: 0.85rem;
+  color: var(--text-secondary); cursor: pointer; background: none; border: none;
+  font-family: var(--font); margin-top: 1.5rem;
+  transition: color var(--transition);
+}
+.history-toggle:hover { color: var(--text); }
+
+.history-list { margin-top: 0.5rem; overflow: hidden; }
+.history-item {
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: var(--radius-sm); padding: 0.6rem 1rem;
+  margin-bottom: 0.35rem; font-size: 0.85rem;
+  display: flex; align-items: center; justify-content: space-between;
+  animation: fadeIn 0.2s ease both;
+}
+.history-item .points { font-size: 0.75rem; font-weight: 500; color: var(--text-secondary); flex-shrink: 0; }
+
+/* Location row */
+.location-row { display: flex; gap: 0.5rem; }
+.location-row .btn-secondary { flex-shrink: 0; white-space: nowrap; }
+
+.coord-inputs {
+  display: flex; gap: 0.5rem; max-height: 0; overflow: hidden;
+  transition: max-height 0.3s ease, margin 0.3s ease;
+}
+.coord-inputs.open { max-height: 3.5rem; margin-top: 0.5rem; }
+
+/* Toast */
+.toast-container {
+  position: fixed; bottom: 1.5rem; right: 1.5rem; z-index: 100;
+  display: flex; flex-direction: column; gap: 0.5rem; max-width: 320px;
+}
+.toast {
+  background: var(--bg-elevated); border: 1px solid var(--border);
+  border-left: 4px solid;
+  border-radius: var(--radius); padding: 0.75rem 1rem;
+  font-size: 0.85rem; display: flex; align-items: center; gap: 0.5rem;
+  animation: toastIn 0.3s ease;
+  box-shadow: var(--shadow-md);
+}
+.toast.success { border-left-color: #10b981; }
+.toast.error   { border-left-color: #ef4444; }
+.toast.info    { border-left-color: #71717a; }
+.toast .dismiss { margin-left: auto; cursor: pointer; opacity: 0.4; background: none; border: none; color: var(--text); font-size: 1.1rem; line-height: 1; padding: 0; }
+.toast .dismiss:hover { opacity: 0.8; }
+
+/* Loader */
+.spinner { animation: spin 0.8s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* Animations */
+@keyframes fadeUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes toastIn { from { opacity: 0; transform: translateY(10px) scale(0.96); } to { opacity: 1; transform: translateY(0) scale(1); } }
+
+.animate-fade { animation: fadeIn 0.3s ease both; }
+
+/* Hidden */
+.hidden { display: none !important; }
+
+/* SVG icon sizing */
+.icon-sm { width: 14px; height: 14px; }
+.icon-md { width: 16px; height: 16px; }
+.icon-lg { width: 20px; height: 20px; }
+
+@media (max-width: 480px) {
+  .hero h1 { font-size: 1.5rem; }
+  .main { padding: 1.5rem 1rem 5rem; }
+}
+</style>
+</head>
+<body>
+
+<header class="header">
+  <span class="header-brand">Complice</span>
+  <button class="btn btn-icon" onclick="toggleTheme()" aria-label="Toggle theme" id="themeBtn">
+    <svg class="icon-md" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" id="themeIcon"/>
+    </svg>
+  </button>
+</header>
+
+<main class="main">
+  <!-- Generator view -->
+  <div id="generatorView">
+    <div class="hero">
+      <h1>Get your daily missions</h1>
+      <p>No signup required</p>
+    </div>
+
+    <div class="form-section">
+      <label class="form-label">Interests</label>
+      <div class="tags" id="interestTags"></div>
+    </div>
+
+    <div class="form-section">
+      <label class="form-label">Mood</label>
+      <select class="select" id="moodSelect">
+        <option value="">Any mood</option>
+      </select>
+    </div>
+
+    <div class="form-section">
+      <label class="form-label">Location</label>
+      <div class="location-row">
+        <button class="btn btn-secondary" onclick="detectLocation()" id="locateBtn" style="flex:1">
+          <svg class="icon-md" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10"/><path d="M2 12h20"/></svg>
+          <span id="locateLabel">Detect location</span>
+        </button>
+        <button class="btn btn-icon" onclick="toggleCoords()" title="Enter coordinates manually">
+          <svg class="icon-md" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+        </button>
+      </div>
+      <div class="coord-inputs" id="coordInputs">
+        <input type="number" step="any" class="input" placeholder="Latitude" id="latInput">
+        <input type="number" step="any" class="input" placeholder="Longitude" id="lonInput">
+      </div>
+    </div>
+
+    <div class="form-section hidden" id="modelSection">
+      <label class="form-label">Model</label>
+      <select class="select" id="modelSelect">
+        <option value="">Default</option>
+      </select>
+    </div>
+
+    <button class="btn btn-primary" id="generateBtn" style="width:100%; padding:0.85rem;" onclick="generateMissions()">
+      <svg class="icon-lg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/></svg>
+      Generate Missions
+    </button>
+  </div>
+
+  <!-- Dashboard view -->
+  <div id="dashboardView" class="hidden">
+    <div class="dashboard-header">
+      <h2>Your Missions</h2>
+      <div class="dashboard-actions">
+        <button class="btn btn-icon" onclick="refreshStats()" title="Refresh stats">
+          <svg class="icon-md" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M3 21v-5h5"/></svg>
+        </button>
+        <button class="btn btn-secondary btn-sm" onclick="newMissions()">New Missions</button>
+      </div>
+    </div>
+
+    <div class="stats-bar" id="statsBar"></div>
+    <div class="missions-grid" id="missionsGrid"></div>
+
+    <button class="history-toggle" id="historyToggle" onclick="toggleHistory()">
+      <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+      <span>Recent Activity</span>
+      <svg class="icon-sm" id="historyChevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+    </button>
+    <div class="history-list" id="historyList" style="display:none"></div>
+  </div>
+</main>
+
+<footer class="footer">
+  <span>Complice / Powered by local AI</span>
+</footer>
+
+<div class="toast-container" id="toastContainer"></div>
+
+<script>
+// ---- State ----
+const INTERESTS = ['Nature','Art','Food','Social','Fitness','Photography','Music','History','Mindfulness','Technology'];
+const MOODS = ['Curious','Energetic','Relaxed','Adventurous','Creative','Focused','Playful'];
+let sessionId = localStorage.getItem('complice_session_id') || null;
+let missions = [];
+let completedIds = new Set();
+let stats = null;
+let history = [];
+let currentLat = null;
+let currentLon = null;
+let showCoordInputs = false;
+let showHistory = false;
+let completingId = null;
+
+// ---- DOM refs ----
+const $ = (s) => document.querySelector(s);
+const $$ = (s) => document.querySelectorAll(s);
+
+// ---- Theme ----
+function initTheme() {
+  const stored = localStorage.getItem('complice_theme');
+  const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+  if (stored === 'dark' || (!stored && prefersDark)) {
+    document.documentElement.classList.add('dark');
+    document.documentElement.classList.remove('light');
+  }
+}
+function toggleTheme() {
+  const isDark = document.documentElement.classList.contains('dark');
+  document.documentElement.classList.toggle('dark', !isDark);
+  document.documentElement.classList.toggle('light', isDark);
+  localStorage.setItem('complice_theme', isDark ? 'light' : 'dark');
+}
+
+// ---- Toast ----
+function toast(message, type = 'info') {
+  const container = $('#toastContainer');
+  const el = document.createElement('div');
+  el.className = `toast ${type}`;
+  el.innerHTML = `<span>${message}</span><button class="dismiss" onclick="this.parentElement.remove()">&times;</button>`;
+  container.appendChild(el);
+  setTimeout(() => el.remove(), 3500);
+}
+
+// ---- API ----
+async function api(path, options = {}) {
+  const headers = { 'Content-Type': 'application/json' };
+  if (sessionId) headers['x-session-id'] = sessionId;
+  const res = await fetch(`/api${path}`, { ...options, headers: { ...headers, ...options.headers } });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.error || `HTTP ${res.status}`);
+  }
+  return res.json();
+}
+
+async function fetchModels() {
+  const models = await api('/models');
+  const section = $('#modelSection');
+  const select = $('#modelSelect');
+  if (models.length > 0) {
+    section.classList.remove('hidden');
+    select.innerHTML = '<option value="">Default</option>' + models.map(m => `<option value="${m}">${m}</option>`).join('');
+  }
+}
+
+async function generateMissions() {
+  if (!currentLat || !currentLon) { toast('Please provide a location', 'error'); return; }
+  const btn = $('#generateBtn');
+  btn.disabled = true;
+  btn.innerHTML = `<svg class="icon-lg spinner" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg> Generating...`;
+
+  const interests = [...$$('#interestTags .tag.active')].map(t => t.dataset.value);
+  const mood = $('#moodSelect').value;
+
+  try {
+    const result = await api('/generate', {
+      method: 'POST',
+      body: JSON.stringify({
+        session_id: sessionId,
+        interests,
+        location: { lat: currentLat, lon: currentLon },
+        mood: mood || undefined,
+        model: $('#modelSelect').value || undefined,
+      }),
+    });
+    sessionId = result.session_id;
+    localStorage.setItem('complice_session_id', sessionId);
+    missions = result.missions;
+    completedIds = new Set();
+    stats = null;
+    history = [];
+    showDashboard();
+    toast('Missions generated', 'success');
+  } catch (e) {
+    toast(e.message || 'Failed to generate missions', 'error');
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = `<svg class="icon-lg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/></svg> Generate Missions`;
+  }
+}
+
+async function completeMission(missionId) {
+  if (!sessionId) return;
+  completingId = missionId;
+  renderMissions();
+  try {
+    const result = await api('/complete', {
+      method: 'POST',
+      body: JSON.stringify({ session_id: sessionId, mission_id: missionId }),
+    });
+    completedIds.add(missionId);
+    stats = { totalPoints: result.total_points, streak: result.streak, badges: stats?.badges || [] };
+    await refreshStats();
+    renderAll();
+    toast(`+${result.points} points`, 'success');
+  } catch (e) {
+    toast(e.message || 'Failed to complete', 'error');
+  } finally {
+    completingId = null;
+    renderMissions();
+  }
+}
+
+async function refreshStats() {
+  if (!sessionId) return;
+  try {
+    const data = await api(`/stats?session_id=${sessionId}`);
+    stats = { totalPoints: data.total_points, streak: data.current_streak, badges: data.badges };
+    history = data.last_completed;
+    renderStats();
+    renderHistory();
+  } catch { /* silent */ }
+}
+
+// ---- Render ----
+function renderAll() {
+  renderStats();
+  renderMissions();
+  renderHistory();
+}
+
+function renderStats() {
+  const bar = $('#statsBar');
+  if (!stats) { bar.innerHTML = ''; return; }
+  let html = '';
+  html += statBadge('flame', 'Streak', stats.streak + 'd', 0);
+  html += statBadge('trophy', 'Points', String(stats.totalPoints), 0.05);
+  stats.badges.slice(0, 3).forEach((b, i) => {
+    html += statBadge('award', b, '', 0.1 + i * 0.05);
+  });
+  bar.innerHTML = html;
+}
+
+function statBadge(icon, label, value, delay) {
+  const icons = {
+    flame: '<svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg>',
+    trophy: '<svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg>',
+    award: '<svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></svg>',
+  };
+  return `<div class="stat-badge" style="animation-delay:${delay}s">
+    <span class="stat-icon">${icons[icon] || ''}</span>
+    <span class="stat-label">${label}</span>
+    ${value ? `<span class="stat-value">${value}</span>` : ''}
+  </div>`;
+}
+
+function renderMissions() {
+  const grid = $('#missionsGrid');
+  grid.innerHTML = missions.map((m, i) => {
+    const completed = completedIds.has(m.id);
+    const loading = completingId === m.id;
+    return `
+    <div class="mission-card${completed ? ' completed' : ''}" style="animation-delay:${i * 0.08}s">
+      <button class="mission-top" onclick="this.parentElement.querySelector('.mission-desc').classList.toggle('open')">
+        <div class="mission-title">
+          <span>${esc(m.title)}</span>
+          ${completed ? `<span class="complete-icon"><svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></span>` : ''}
+        </div>
+        <div class="mission-meta">
+          <span><svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>${m.time_limit_minutes}m</span>
+          <span><svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>${m.radius_meters}m</span>
+          <span><svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>${m.points} pts</span>
+        </div>
+      </button>
+      <div class="mission-desc">${esc(m.description)}</div>
+      ${!completed ? `
+      <div class="mission-bottom">
+        <button class="btn btn-primary btn-sm" style="width:100%" onclick="completeMission(${m.id})" ${loading ? 'disabled' : ''}>
+          ${loading
+            ? `<svg class="icon-md spinner" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>`
+            : `<svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg> Complete`}
+        </button>
+      </div>` : ''}
+    </div>`;
+  }).join('');
+}
+
+function renderHistory() {
+  const list = $('#historyList');
+  const toggle = $('#historyToggle');
+  if (history.length === 0) { toggle.classList.add('hidden'); return; }
+  toggle.classList.remove('hidden');
+  list.innerHTML = history.map(h => `
+    <div class="history-item">
+      <span>${esc(h.title)}</span>
+      <span class="points">+${h.points_earned} pts</span>
+    </div>
+  `).join('');
+  list.style.display = showHistory ? 'block' : 'none';
+  const chevron = $('#historyChevron');
+  chevron.innerHTML = showHistory
+    ? '<polyline points="18 15 12 9 6 15"/>'
+    : '<polyline points="6 9 12 15 18 9"/>';
+}
+
+function toggleHistory() {
+  showHistory = !showHistory;
+  renderHistory();
+}
+
+function showDashboard() {
+  $('#generatorView').classList.add('hidden');
+  $('#dashboardView').classList.remove('hidden');
+  renderAll();
+}
+
+function newMissions() {
+  missions = [];
+  completedIds = new Set();
+  stats = null;
+  history = [];
+  showHistory = false;
+  $('#dashboardView').classList.add('hidden');
+  $('#generatorView').classList.remove('hidden');
+}
+
+function esc(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// ---- Location ----
+function toggleCoords() {
+  showCoordInputs = !showCoordInputs;
+  $('#coordInputs').classList.toggle('open', showCoordInputs);
+}
+
+function detectLocation() {
+  if (!navigator.geolocation) { toast('Geolocation not supported', 'error'); return; }
+  const btn = $('#locateBtn');
+  const label = $('#locateLabel');
+  const origText = label.textContent;
+  btn.disabled = true;
+  label.innerHTML = `<svg class="icon-md spinner" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg> Locating...`;
+
+  navigator.geolocation.getCurrentPosition(
+    (pos) => {
+      currentLat = parseFloat(pos.coords.latitude.toFixed(5));
+      currentLon = parseFloat(pos.coords.longitude.toFixed(5));
+      $('#latInput').value = currentLat;
+      $('#lonInput').value = currentLon;
+      label.textContent = `${currentLat.toFixed(3)}, ${currentLon.toFixed(3)}`;
+      btn.disabled = false;
+    },
+    () => {
+      toast('Location access denied', 'error');
+      label.textContent = origText;
+      btn.disabled = false;
+    },
+    { enableHighAccuracy: true, timeout: 10000 }
+  );
+}
+
+// Listen for manual coordinate input changes
+document.addEventListener('DOMContentLoaded', () => {
+  $('#latInput').addEventListener('input', syncCoords);
+  $('#lonInput').addEventListener('input', syncCoords);
+});
+
+function syncCoords() {
+  const lat = parseFloat($('#latInput').value);
+  const lon = parseFloat($('#lonInput').value);
+  if (!isNaN(lat) && !isNaN(lon)) {
+    currentLat = lat;
+    currentLon = lon;
+    $('#locateLabel').textContent = `${lat.toFixed(3)}, ${lon.toFixed(3)}`;
+  }
+}
+
+// ---- Init ----
+function init() {
+  initTheme();
+
+  // Render interest tags
+  $('#interestTags').innerHTML = INTERESTS.map(i =>
+    `<span class="tag" data-value="${i}" onclick="this.classList.toggle('active')">${i}</span>`
+  ).join('');
+
+  // Render mood options
+  $('#moodSelect').innerHTML = '<option value="">Any mood</option>' + MOODS.map(m =>
+    `<option value="${m}">${m}</option>`
+  ).join('');
+
+  fetchModels();
+}
+
+init();
+</script>
+</body>
+</html>
