@@ -1,0 +1,1 @@
+ALTER TABLE sessions ADD COLUMN bonus_claimed INTEGER NOT NULL DEFAULT 0;

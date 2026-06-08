@@ -3,3 +3,4 @@ pub mod generate;
 pub mod complete;
 pub mod stats;
 pub mod health;
+pub mod reroll;

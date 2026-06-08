@@ -9,6 +9,7 @@ pub struct GenerateRequest {
     pub location: Location,
     pub mood: Option<String>,
     pub model: Option<String>,
+    pub difficulty: Option<String>,
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
@@ -53,6 +54,22 @@ pub struct CompleteResponse {
     pub points: i32,
     pub streak: i32,
     pub total_points: i64,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct RerollRequest {
+    pub session_id: String,
+    pub mission_id: i32,
+    pub interests: Vec<String>,
+    pub location: Location,
+    pub mood: Option<String>,
+    pub model: Option<String>,
+    pub difficulty: Option<String>,
+}
+
+#[derive(Debug, Serialize)]
+pub struct RerollResponse {
+    pub mission: MissionResponse,
 }
 
 #[derive(Debug, Serialize)]

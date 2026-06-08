@@ -57,6 +57,7 @@ async fn main() {
         .route("/api/health", get(handlers::health::health_check))
         .route("/api/models", get(handlers::models::get_models))
         .route("/api/generate", post(handlers::generate::generate_missions))
+        .route("/api/reroll", post(handlers::reroll::reroll_mission))
         .route("/api/complete", post(handlers::complete::complete_mission))
         .route("/api/stats", get(handlers::stats::get_stats))
         .layer(cors)
