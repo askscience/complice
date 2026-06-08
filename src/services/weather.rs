@@ -1,7 +1,7 @@
 use reqwest::Client;
 
 use crate::error::ApiError;
-use crate::models::{Location, OpenMeteoResponse};
+use crate::models::{Location, OpenMeteoResponse, NominatimResponse};
 
 pub async fn get_weather(
     endpoint: &str,
@@ -31,6 +31,51 @@ pub async fn get_weather(
         }
         None => Ok("Weather data unavailable".into()),
     }
+}
+
+pub async fn get_location_name(location: &Location) -> Result<String, ApiError> {
+    let client = Client::builder()
+        .user_agent("Complice/1.0")
+        .build()?;
+
+    let url = format!(
+        "https://nominatim.openstreetmap.org/reverse?format=json&lat={}&lon={}&zoom=12&addressdetails=1",
+        location.lat, location.lon
+    );
+
+    let resp: NominatimResponse = client
+        .get(&url)
+        .send()
+        .await?
+        .error_for_status()?
+        .json()
+        .await?;
+
+    let name = pick_location_name(&resp);
+    Ok(name)
+}
+
+fn pick_location_name(resp: &NominatimResponse) -> String {
+    let city = resp.address.city.as_deref()
+        .or(resp.address.town.as_deref())
+        .or(resp.address.village.as_deref())
+        .unwrap_or("");
+    let state = resp.address.state.as_deref().unwrap_or("");
+    let country = resp.address.country.as_deref().unwrap_or("");
+
+    if !resp.name.is_empty() && city.is_empty() {
+        return format!("{}, {}", resp.name, state);
+    }
+    if !city.is_empty() && !state.is_empty() {
+        return format!("{city}, {state}");
+    }
+    if !city.is_empty() {
+        return city.to_string();
+    }
+    if !state.is_empty() {
+        return format!("{state}, {country}");
+    }
+    resp.display_name.chars().take(80).collect()
 }
 
 fn weather_code_description(code: i32) -> &'static str {

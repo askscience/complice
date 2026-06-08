@@ -7,6 +7,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 
@@ -133,19 +135,15 @@ body{
 .hero{
   display:flex; flex-direction:column; align-items:center; justify-content:center;
   text-align:center; padding:4rem 1.5rem 3rem; position:relative; overflow:hidden;
-  min-height:50vh;
+  min-height:55vh;
 }
 .hero::before{
-  content:''; position:absolute; top:-50%; left:-50%; width:200%; height:200%;
-  background:radial-gradient(ellipse at 50% 0%, var(--border) 0%, transparent 50%),
-             radial-gradient(ellipse at 80% 100%, var(--border) 0%, transparent 40%);
-  opacity:0.4; animation:heroShift 12s ease-in-out infinite alternate;
+  content:''; position:absolute; inset:0; z-index:1;
+  background:rgba(250,250,250,0.55);
 }
-@keyframes heroShift{
-  from{transform:translate(0,0)}
-  to{transform:translate(2%,-1%)}
-}
-.hero-content{position:relative; z-index:1; max-width:640px}
+html.dark .hero::before{background:rgba(9,9,11,0.6)}
+#mapBg{position:absolute;inset:0;z-index:0}
+.hero-content{position:relative;z-index:2;max-width:640px}
 .hero-tag{
   display:inline-block; font-size:0.75rem; font-weight:500; letter-spacing:0.08em;
   color:var(--text-secondary); text-transform:uppercase; margin-bottom:1.5rem;
@@ -386,6 +384,7 @@ body{
 <!-- HOMEPAGE -->
 <main id="homeView">
   <section class="hero">
+    <div id="mapBg"></div>
     <div class="hero-content">
       <span class="hero-tag">Daily Missions</span>
       <h1>Discover <strong>what to do</strong><br>today</h1>
@@ -434,7 +433,25 @@ body{
 </main>
 
 <!-- DASHBOARD -->
-<main id="dashboardView" class="dashboard hidden"></main>
+<main id="dashboardView" class="dashboard hidden">
+  <div class="dashboard-header">
+    <h2>Your Missions</h2>
+    <div class="dashboard-actions">
+      <button class="btn btn-icon" onclick="refreshStats()" title="Refresh">
+        <svg class="icon-md" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M3 21v-5h5"/></svg>
+      </button>
+      <button class="btn btn-secondary btn-sm" onclick="newMissions()">New Missions</button>
+    </div>
+  </div>
+  <div class="stats-bar" id="statsBar"></div>
+  <div class="missions-grid" id="missionsGrid"></div>
+  <button class="history-toggle" id="historyToggle" onclick="toggleHistory()">
+    <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+    <span>Recent Activity</span>
+    <svg class="icon-sm" id="historyChevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+  </button>
+  <div class="history-list" id="historyList" style="display:none"></div>
+</main>
 
 <!-- OVERLAY -->
 <div class="overlay-backdrop" id="overlayBackdrop" onclick="closeOverlay()"></div>
@@ -514,6 +531,19 @@ const $=s=>document.querySelector(s); const $$=s=>document.querySelectorAll(s);
 function toggleTheme(){
   const d=document.documentElement; const is=d.classList.contains('dark');
   d.classList.toggle('dark',!is); localStorage.setItem('complice_theme',is?'light':'dark');
+  if(window._mapLayer){
+    window._mapLayer.setUrl(is?'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png':'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png');
+  }
+}
+
+// ---- OSM Map ----
+function initMap(){
+  const el=document.getElementById('mapBg'); if(!el||window._map)return;
+  const isDark=document.documentElement.classList.contains('dark');
+  const tileUrl=isDark?'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png':'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
+  const map=L.map('mapBg',{center:[20,0],zoom:2,zoomControl:false,attributionControl:false});
+  window._mapLayer=L.tileLayer(tileUrl,{maxZoom:18,attribution:'&copy; <a href="https://www.openstreetmap.org/copyright">OSM</a> &copy; <a href="https://carto.com/">CARTO</a>'}).addTo(map);
+  window._map=map;
 }
 
 // ---- Toast ----
@@ -546,6 +576,10 @@ function nav(view){
 }
 function openOverlay(){ $('#overlayBackdrop').classList.add('open'); $('#overlayPanel').classList.add('open'); }
 function closeOverlay(){ $('#overlayBackdrop').classList.remove('open'); $('#overlayPanel').classList.remove('open'); }
+function newMissions(){
+  missions=[]; completedIds=new Set(); stats=null; history=[]; showHistory=false;
+  nav('home'); openOverlay();
+}
 
 // ---- Difficulty ----
 function setDifficulty(v,el){
@@ -572,6 +606,7 @@ function detectLocation(){
     currentLat=parseFloat(p.coords.latitude.toFixed(5)); currentLon=parseFloat(p.coords.longitude.toFixed(5));
     $('#latInput').value=currentLat; $('#lonInput').value=currentLon;
     l.textContent=`${currentLat.toFixed(3)}, ${currentLon.toFixed(3)}`; b.disabled=false;
+    if(window._map){window._map.setView([currentLat,currentLon],13,{animate:true});}
   },()=>{toast('Location access denied','error'); l.textContent=o; b.disabled=false;},{enableHighAccuracy:true,timeout:10000});
 }
 document.addEventListener('DOMContentLoaded',()=>{
@@ -686,6 +721,7 @@ function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').repl
 
 // ---- Init ----
 function init(){
+  initMap();
   // Interest tags (homepage categories + overlay)
   const tags=INTERESTS.map(i=>`<span class="tag" data-value="${i}" onclick="toggleInterest('${i}')">${i}</span>`).join('');
   $('#interestTags').innerHTML=tags;

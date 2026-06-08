@@ -143,3 +143,33 @@ pub struct CurrentWeather {
     pub weathercode: i32,
     pub windspeed: f64,
 }
+
+#[derive(Debug, Deserialize)]
+pub struct NominatimResponse {
+    #[serde(default)]
+    pub name: String,
+    #[serde(default)]
+    pub display_name: String,
+    #[serde(default)]
+    pub address: NominatimAddress,
+}
+
+#[derive(Debug, Deserialize, Default)]
+pub struct NominatimAddress {
+    #[serde(default)]
+    #[allow(dead_code)]
+    pub road: Option<String>,
+    #[serde(default)]
+    #[allow(dead_code)]
+    pub suburb: Option<String>,
+    #[serde(default)]
+    pub city: Option<String>,
+    #[serde(default)]
+    pub town: Option<String>,
+    #[serde(default)]
+    pub village: Option<String>,
+    #[serde(default)]
+    pub state: Option<String>,
+    #[serde(default)]
+    pub country: Option<String>,
+}

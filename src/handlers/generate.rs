@@ -54,6 +54,20 @@ pub async fn core_generate(
         summary
     };
 
+    let geo_cache_key = format!("geo:{}:{}", location.lat, location.lon);
+    let location_name = if let Some(cached) = state.cache.get(&geo_cache_key) {
+        cached
+    } else {
+        let name = weather::get_location_name(location)
+            .await
+            .unwrap_or_else(|e| {
+                tracing::warn!("Geocoding failed: {e:?}");
+                "your area".to_string()
+            });
+        state.cache.set(&geo_cache_key, name.clone(), 300);
+        name
+    };
+
     let now = Utc::now();
     let seven_days_ago = (now - Duration::days(7)).to_rfc3339();
 
@@ -70,7 +84,7 @@ pub async fn core_generate(
     .fetch_all(&state.db)
     .await?;
 
-    let prompt = prompt::build_prompt(interests, &weather_summary, mood, &recent, difficulty, count);
+    let prompt = prompt::build_prompt(interests, &weather_summary, &location_name, mood, &recent, difficulty, count);
 
     let model_name = model.unwrap_or(&state.default_model);
 

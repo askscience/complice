@@ -3,6 +3,7 @@ use chrono::{Local, Timelike};
 pub fn build_prompt(
     interests: &[String],
     weather: &str,
+    location_name: &str,
     mood: Option<&str>,
     recent_missions: &[String],
     difficulty: Option<&str>,
@@ -50,16 +51,16 @@ pub fn build_prompt(
     format!(
         r#"You are a creative mission generator for "Complice", an outdoor activity and self-improvement app. {count_str} based on the user's context.
 
-User Profile:
-- Interests: {interests_str}
-- Weather: {weather}
-- Time of day: {time_of_day}
-- Difficulty: {diff_label}
-{mood_line}
-- {recent_str}
+Location: {location_name}
+Weather: {weather}
+Time of day: {time_of_day}
+Interests: {interests_str}{mood_line}
+Difficulty: {diff_label}
+{recent_str}
 
 Mission Requirements:
 - Each mission must be realistically doable within the given time limit and radius
+- Missions should reference local landmarks, streets, parks, or geography known to be near {location_name}
 - Missions should be varied and encourage exploration, creativity, or self-improvement
 - Points should be in range {points_range} (difficulty: {diff_label})
 - Descriptions should be inspiring and actionable (1-2 sentences)
@@ -70,7 +71,7 @@ Respond with ONLY valid JSON (no markdown, no extra text):
         mood_line = if mood_str.is_empty() {
             String::new()
         } else {
-            format!("- {mood_str}")
+            format!(", {mood_str}")
         }
     )
 }
